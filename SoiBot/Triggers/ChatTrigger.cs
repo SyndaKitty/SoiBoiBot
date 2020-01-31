@@ -15,7 +15,8 @@ namespace SoiBot.Triggers
 
         public bool Matches(ChatMessage message)
         {
-            var lowerMessage = message.Message.ToLowerInvariant();
+            var lowerMessage = message.Message.ToLowerInvariant().Replace("?", "").Replace("!", "");
+
             return Words.Any(x => (lowerMessage.StartsWith(x) && lowerMessage.EndsWith(x)) || lowerMessage.StartsWith($"{x} ") || lowerMessage.Contains($" {x} ") || lowerMessage.EndsWith($" {x}"));
         }
     }

@@ -48,7 +48,14 @@ namespace SoiBot
             {
                 if (command.Matches(args.ChatMessage))
                 {
-                    command.Execute(client, args.ChatMessage);
+                    try
+                    {
+                        command.Execute(client, args.ChatMessage);
+                    }
+                    catch (Exception ex)
+                    {
+                        client.SendMessage(args.ChatMessage.Channel, "Good job, you broke something @" + args.ChatMessage.Username);
+                    }
                     return;
                 }
             }
@@ -72,10 +79,11 @@ namespace SoiBot
             commands.Add(new TextCommand(new CommandTrigger("soi", "soiboi", "soiboibot", "soy"), ":o"));
 
             // My lovely friends :)
-            commands.Add(new TextCommand(new CommandTrigger("false", "falsebracket"), " // TODO"));
+            commands.Add(new TextCommand(new CommandTrigger("false", "falsebracket"), "falsebracket.com"));
             commands.Add(new TextCommand(new CommandTrigger("dread", "dreadusa"), "You know not what power you invoke when speaking that name..."));
 
             commands.Add(new Magic8BallCommand(new CommandTrigger("8ball")));
+            commands.Add(new AddSongCommand(new CommandTrigger("addsong", "downloadsong")));
             #endregion
 
             #region ChatTrigger
@@ -88,6 +96,31 @@ namespace SoiBot
             commands.Add(new CompositeCommand(new ChatTrigger(":*", "💋", "😗", "😘", "😙", "😚", "😽"), sayKiss, playKiss));
             commands.Add(new TextCommand(new ChatTrigger("o/", @"\o"), "HeyGuys"));
 
+            commands.Add(new TextCommand(new FuzzyTrigger("meow"), 
+                "Weow! 😽", 
+                "Weow! 🐱",
+                "Weow! 🐈", 
+                "Weow! 😸",
+                "Weow! 😹", 
+                "Weow! 😺",
+                "Weow! 😻", 
+                "Weow! 😼",
+                "Weow! 😾",
+                "Weow! 🙀"
+                ));
+            commands.Add(new TextCommand(new FuzzyTrigger("weow"), 
+                "Meow! 😽", 
+                "Meow! 🐱",
+                "Meow! 🐈", 
+                "Meow! 😸",
+                "Meow! 😹", 
+                "Meow! 😺",
+                "Meow! 😻", 
+                "Meow! 😼",
+                "Meow! 😾",
+                "Meow! 🙀"));
+
+            // TODO: Commands/Help command
             #endregion
         }
 

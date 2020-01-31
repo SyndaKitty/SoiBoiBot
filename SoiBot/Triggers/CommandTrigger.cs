@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.CodeDom;
+using System.Collections.Generic;
 using System.Linq;
 using TwitchLib.Client.Models;
 
@@ -23,7 +24,7 @@ namespace SoiBot.Triggers
         public bool Matches(ChatMessage message)
         {
             var text = message.Message.TrimStart().ToLowerInvariant();
-            return Words.Any(x => text.StartsWith(CommandPrefix + x));
+            return Words.Any(x => text.StartsWith(CommandPrefix + x + " ") || text.StartsWith(CommandPrefix + x) && text.EndsWith(CommandPrefix + x));
         }
     }
 }
