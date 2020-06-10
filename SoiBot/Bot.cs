@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Timers;
 using SoiBot.Commands;
 using SoiBot.Triggers;
@@ -51,9 +52,7 @@ namespace SoiBot
             //client.OnWhisperReceived += Client_OnWhisperReceived;
             client.OnNewSubscriber += Client_OnNewSubscriber;
             //client.OnConnected += Client_OnConnected;
-
-            // TODO: Need to register application with Twitch Developer Portal https://dev.twitch.tv/console/apps/create
-            // TODO: to get a ClientId  
+            
             var api = new TwitchAPI();
             api.Settings.ClientId = GetClientID();
             api.Settings.Secret = GetSecret();
@@ -90,7 +89,6 @@ namespace SoiBot
 
         void SendRecurringCommand(object sender, ElapsedEventArgs args)
         {
-            Console.WriteLine("Sending recurring command");
             if (recurringCommands.Count == 0) return;
             if (recurringIndex >= recurringCommands.Count)
             {
@@ -140,59 +138,17 @@ namespace SoiBot
 
         void CreateCommands()
         {
-            #region CommandTriggers
-
-            // TODO make this actually store/retrieve quote info
-            commands.Add(new TextCommand(new CommandTrigger("quote"), "Quoteth", "Quote"));
-            
-            var sayMoo = new TextCommand(null, "Moo!", "🐄🐄🐄");
-            var playMoo = new SoundCommand(null, @"C:\Stream\moo.wav");
-            commands.Add(new CompositeCommand(new CommandTrigger("moo"), sayMoo, playMoo));
-
             commands.Add(new TextCommand(new CommandTrigger("twitter"), "https://twitter.com/SpencasaurusRex"));
             recurringCommands.Add(new TextCommand(null, "Check out my Twitter! I post there at least once a decade :) https://twitter.com/SpencasaurusRex"));
+            
+            commands.Add(new TextCommand(new CommandTrigger("discord"), ""));
+            recurringCommands.Add(new TextCommand(null, "Be a cutie and join our Discord! https://discord.gg/PH8JwGk"));
+            
+            commands.Add(new TextCommand(new CommandTrigger("github"), "https://github.com/SpencasaurusRex/"));
+            recurringCommands.Add(new TextCommand(null, "You're always welcome to get grossed out by bad code ;) https://github.com/SpencasaurusRex/"));
 
             var soi = new TextCommand(new CommandTrigger("soi", "soiboi", "soiboibot", "soy"), ":o", ":D", "<3");
             commands.Add(soi);
-            recurringCommands.Add(soi);
-
-            // My lovely friends :)
-            commands.Add(new TextCommand(new CommandTrigger("false", "falsebracket"), "falsebracket.com"));
-            commands.Add(new TextCommand(new CommandTrigger("dread", "dreadusa"), "You know not what power you invoke when speaking that name..."));
-
-            commands.Add(new Magic8BallCommand(new CommandTrigger("8ball")));
-            
-            // TODO: Broken :(
-            // commands.Add(new AddSongCommand(new CommandTrigger("addsong", "downloadsong")));
-            
-            #endregion
-
-            #region ChatTrigger
-
-            commands.Add(new TextCommand(new ChatTrigger("haha"), "hehe"));
-            commands.Add(new TextCommand(new ChatTrigger("hehe"), "haha"));
-            
-            var sayKiss = new TextCommand(null, "😽");
-            var playKiss = new SoundCommand(null, @"C:\Stream\kiss.wav");
-            commands.Add(new CompositeCommand(new ChatTrigger(":*", "💋", "😗", "😘", "😙", "😚", "😽"), sayKiss, playKiss));
-            recurringCommands.Add(sayKiss);
-            
-            commands.Add(new TextCommand(new ChatTrigger("o/", @"\o"), "HeyGuys"));
-
-            var meow = new TextCommand(new FuzzyTrigger("meow"),
-                "Weow! 😽",
-                "Weow! 🐱",
-                "Weow! 🐈",
-                "Weow! 😸",
-                "Weow! 😹",
-                "Weow! 😺",
-                "Weow! 😻",
-                "Weow! 😼",
-                "Weow! 😾",
-                "Weow! 🙀"
-            );
-            commands.Add(meow);
-            recurringCommands.Add(meow);
 
             var weow = new TextCommand(new FuzzyTrigger("weow"),
                 "Meow! 😽",
@@ -206,8 +162,51 @@ namespace SoiBot
                 "Meow! 😾",
                 "Meow! 🙀");
             commands.Add(weow);
-            recurringCommands.Add(weow);
+            
+            var meow = new TextCommand(new FuzzyTrigger("meow"),
+                "Weow! 😽",
+                "Weow! 🐱",
+                "Weow! 🐈",
+                "Weow! 😸",
+                "Weow! 😹",
+                "Weow! 😺",
+                "Weow! 😻",
+                "Weow! 😼",
+                "Weow! 😾",
+                "Weow! 🙀"
+            );
+            commands.Add(meow);
+            
+            var sayKiss = new TextCommand(null, "😽");
+            var playKiss = new SoundCommand(null, @"C:\Stream\kiss.wav");
+            commands.Add(new CompositeCommand(new PaddedTrigger(":*", "💋", "😗", "😘", "😙", "😚", "😽"), false, sayKiss, playKiss));
 
+            var fax = new TextCommand(new CommandTrigger("fax", "facts"), "He spittin str8 𝐅 Å 𝕏");
+            commands.Add(fax);
+            recurringCommands.Add(new CompositeCommand(null, true, weow, meow, sayKiss, fax, soi));
+            
+            // TODO make this actually store/retrieve quote info
+            commands.Add(new TextCommand(new CommandTrigger("quote"), "Quoteth", "Quote"));
+            
+            var sayMoo = new TextCommand(null, "Moo!", "🐄🐄🐄");
+            var playMoo = new SoundCommand(null, @"C:\Stream\moo.wav");
+            commands.Add(new CompositeCommand(new CommandTrigger("moo"), false, sayMoo, playMoo));
+
+            // My lovely friends :)
+            commands.Add(new TextCommand(new CommandTrigger("false", "falsebracket"), "falsebracket.com"));
+            commands.Add(new TextCommand(new CommandTrigger("dread", "dreadusa"), "You know not what power you invoke when speaking that name..."));
+            // commands.
+            
+            commands.Add(new Magic8BallCommand(new CommandTrigger("8ball")));
+            
+            // TODO: Broken :(
+            // commands.Add(new AddSongCommand(new CommandTrigger("addsong", "downloadsong")));
+
+            commands.Add(new TextCommand(new PaddedTrigger("haha"), "hehe"));
+            commands.Add(new TextCommand(new PaddedTrigger("hehe"), "haha"));
+            
+            commands.Add(new TextCommand(new PaddedTrigger("o/", @"\o", "HeyGuys"), "HeyGuys"));
+            
             var help = new MultiTextCommand(new CommandTrigger("help", "commands"),
                 "!soi : That's me!",
                 "!8ball : Receive my divine wisdom",
@@ -215,13 +214,21 @@ namespace SoiBot
                 );
             commands.Add(help);
             
-            commands.Add(new TextCommand(new CommandTrigger("discord"), ""));
-            recurringCommands.Add(new TextCommand(null, "Be a cutie and join our Discord! https://discord.gg/PH8JwGk"));
-            
-            commands.Add(new TextCommand(new CommandTrigger("github"), "https://github.com/SpencasaurusRex/"));
-            recurringCommands.Add(new TextCommand(null, "You're always welcome to get grossed out by bad code ;) https://github.com/SpencasaurusRex/"));
+            List<string> thankVariations = new List<string> { "thanks", "ty", "thank you", "thankyou" };
+            List<string> soiNameVariations = new List<string> { "soi", "soiboi", "soiboibot", "@soiboibot"};
 
-            #endregion
+            var ty = thankVariations.SelectMany(x => soiNameVariations.Select(y => x + " " + y)).ToArray();
+            commands.Add(new TextCommand(new PaddedTrigger(ty), "😸", "You're welcome :D"));
+
+            List<string> meanCommands = new List<string> {"gtfo", "leave", "shut up", "shush", "stfu"};
+            var meanCommandTriggers = meanCommands.SelectMany(x => soiNameVariations.Select(y => x + " " + y)).ToArray();
+            commands.Add(new TextCommand(new PaddedTrigger(meanCommandTriggers), "😿", "NO! 😾", "Bite me 😾", "[╯°□°]╯︵ ┻━┻"));
+
+            List<string> meanWords = new List<string> { "i hate you", "you suck" };
+            var meanWordTriggers = meanWords.SelectMany(x => soiNameVariations.Select(y => x + " " + y)).ToArray();
+            commands.Add(new TextCommand(new PaddedTrigger(meanWordTriggers), "😿"));
+
+            commands.Add(new TextCommand(new PaddedTrigger("RIP"), "F", "𝓕", "𝑓"));
         }
 
         string GetAccessToken()

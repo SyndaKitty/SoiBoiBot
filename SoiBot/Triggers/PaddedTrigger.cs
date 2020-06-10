@@ -4,11 +4,11 @@ using TwitchLib.Client.Models;
 
 namespace SoiBot.Triggers
 {
-    public class ChatTrigger : ITrigger
+    public class PaddedTrigger : ITrigger
     {
         public List<string> Words { get; set; } = new List<string>();
 
-        public ChatTrigger(params string[] words)
+        public PaddedTrigger(params string[] words)
         {
             Words.AddRange(words.Select(x => x.ToLowerInvariant()));
         }
