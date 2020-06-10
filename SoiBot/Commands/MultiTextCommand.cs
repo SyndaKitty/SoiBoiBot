@@ -5,18 +5,18 @@ using TwitchLib.Client.Models;
 
 namespace SoiBot.Commands
 {
-    public class TextCommand : ICommand
+    public class MultiTextCommand : ICommand
     {
         public ITrigger Trigger { get; set; }
         public List<string> Responses { get; set; } = new List<string>();
 
-        public TextCommand(ITrigger trigger, List<string> responses)
+        public MultiTextCommand(ITrigger trigger, List<string> responses)
         {
             Trigger = trigger;
             Responses = responses;
         }
 
-        public TextCommand(ITrigger trigger, params string[] responses)
+        public MultiTextCommand(ITrigger trigger, params string[] responses)
         {
             Trigger = trigger;
             Responses.AddRange(responses);
@@ -26,9 +26,11 @@ namespace SoiBot.Commands
 
         public void Execute(TwitchClient client, ChatMessage message)
         {
-            int responseIndex = new Random().Next(0, Responses.Count);
-            Console.WriteLine($"= SoiBoiBot: {Responses[responseIndex]}");
-            client.SendMessage(Bot.Channel, Responses[responseIndex]);
+            for (int responseIndex = 0; responseIndex < Responses.Count; responseIndex++)
+            {
+                Console.WriteLine($"= SoiBoiBot: {Responses[responseIndex]}");
+                client.SendMessage(message.Channel, Responses[responseIndex]);    
+            }
         }
     }
 }

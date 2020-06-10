@@ -132,6 +132,7 @@
     <Compile Include="Commands\AddSongCommand.cs" />
     <Compile Include="Commands\CompositeCommand.cs" />
     <Compile Include="Commands\Magic8BallCommand.cs" />
+    <Compile Include="Commands\MultiTextCommand.cs" />
     <Compile Include="Commands\TextCommand.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="ITrigger.cs" />
