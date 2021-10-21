@@ -19,21 +19,21 @@ namespace SoiBot.Commands
             Random = random;
         }
 
-        public bool Matches(ChatMessage message) => Trigger.Matches(message);
+        public bool Matches(ChatMessage message, BotVariables variables) => Trigger.Matches(message, variables);
 
-        public void Execute(TwitchClient client, ChatMessage message)
+        public void Execute(TwitchClient client, ChatMessage message, BotVariables variables, BotFile file)
         {
             if (Random)
             {
                 int commandIndex = new Random().Next(0, Commands.Count);
                 var command = Commands[commandIndex];
-                command.Execute(client, message);
+                command.Execute(client, message, variables, file);
                 return;
             }
 
             foreach (var command in Commands)
             {
-                command.Execute(client, message);
+                command.Execute(client, message, variables, file);
             }
         }
     }

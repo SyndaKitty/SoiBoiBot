@@ -11,6 +11,6 @@ namespace SoiBot.Triggers
             triggerWord = wordThing;
         }
 
-        public bool Matches(ChatMessage message) => message.Message.ToLowerInvariant().Contains(triggerWord.ToLowerInvariant());
+        public bool Matches(ChatMessage message, BotVariables variables) => message.Message.ToLowerInvariant().Contains(triggerWord.ToLowerInvariant());
     }
 }

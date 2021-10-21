@@ -13,7 +13,7 @@ namespace SoiBot.Triggers
             Words.AddRange(words.Select(x => x.ToLowerInvariant()));
         }
 
-        public bool Matches(ChatMessage message)
+        public bool Matches(ChatMessage message, BotVariables variables)
         {
             var lowerMessage = message.Message.ToLowerInvariant().Replace("?", "").Replace("!", "");
 

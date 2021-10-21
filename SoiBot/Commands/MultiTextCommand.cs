@@ -22,9 +22,9 @@ namespace SoiBot.Commands
             Responses.AddRange(responses);
         }
 
-        public bool Matches(ChatMessage message) => Trigger.Matches(message);
+        public bool Matches(ChatMessage message, BotVariables variables) => Trigger.Matches(message, variables);
 
-        public void Execute(TwitchClient client, ChatMessage message)
+        public void Execute(TwitchClient client, ChatMessage message, BotVariables variables, BotFile file)
         {
             for (int responseIndex = 0; responseIndex < Responses.Count; responseIndex++)
             {

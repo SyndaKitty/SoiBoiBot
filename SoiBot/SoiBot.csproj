@@ -129,18 +129,27 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bot.cs" />
+    <Compile Include="BotData.cs" />
+    <Compile Include="BotFile.cs" />
+    <Compile Include="BotVariables.cs" />
     <Compile Include="Commands\AddSongCommand.cs" />
+    <Compile Include="Commands\ChemicalsCommand.cs" />
     <Compile Include="Commands\CompositeCommand.cs" />
+    <Compile Include="Commands\CuilCommand.cs" />
     <Compile Include="Commands\Magic8BallCommand.cs" />
     <Compile Include="Commands\MultiTextCommand.cs" />
+    <Compile Include="Commands\PonderCommand.cs" />
+    <Compile Include="Commands\RegexCommand.cs" />
     <Compile Include="Commands\TextCommand.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="ITrigger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Triggers\OnlyTrigger.cs" />
     <Compile Include="Triggers\PaddedTrigger.cs" />
     <Compile Include="Triggers\CommandTrigger.cs" />
     <Compile Include="Triggers\FuzzyTrigger.cs" />
+    <Compile Include="Triggers\RegexTrigger.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

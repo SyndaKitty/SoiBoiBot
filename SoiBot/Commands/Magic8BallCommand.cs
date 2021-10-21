@@ -13,9 +13,9 @@ namespace SoiBot.Commands
             Trigger = trigger;
         }
 
-        public bool Matches(ChatMessage message) => Trigger.Matches(message);
+        public bool Matches(ChatMessage message, BotVariables variables) => Trigger.Matches(message, variables);
 
-        public void Execute(TwitchClient client, ChatMessage message)
+        public void Execute(TwitchClient client, ChatMessage message, BotVariables variables, BotFile file)
         {
             string[] responses =
             {

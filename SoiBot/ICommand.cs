@@ -5,7 +5,7 @@ namespace SoiBot
 {
     public interface ICommand
     {
-        bool Matches(ChatMessage message);
-        void Execute(TwitchClient client, ChatMessage message);
+        bool Matches(ChatMessage message, BotVariables variables);
+        void Execute(TwitchClient client, ChatMessage message, BotVariables variables, BotFile file);
     }
 }

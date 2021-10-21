@@ -4,6 +4,8 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Timers;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SoiBot.Commands;
 using SoiBot.Triggers;
 using TwitchLib.Api;
@@ -22,18 +24,51 @@ namespace SoiBot
         List<ICommand> commands = new List<ICommand>();
         
         List<ICommand> recurringCommands = new List<ICommand>();
-        const double RecurringInterval = 6 * 60 * 1000;
+        const double RecurringInterval = 8 * 60 * 1000;
         int recurringIndex;
         
         TwitchClient client;
 
         bool startupIgnoreNewFollowers = true;
         
-        // TODO bad..
-        public static string Channel = "SpencasaurusRex";
-        
+        public static string Channel = "SyndaKai";
+        BotVariables variables = new BotVariables();
+        BotFile file = new BotFile(@"F:\Dev\Soibot.txt");
+        BotData Data;
+
+        const string dataFile = "botdata.json";
+
+        void LoadData()
+        {
+            if (File.Exists(dataFile))
+            {
+                using (StreamReader file = File.OpenText(dataFile))
+                using (JsonTextReader reader = new JsonTextReader(file))
+                {
+                    JObject o2 = (JObject) JToken.ReadFrom(reader);
+                    Data = o2.ToObject<BotData>();
+                }
+            }
+            else
+            {
+                Data = new BotData();
+            }
+        }
+
+        void SaveData()
+        {
+            using (StreamWriter file = File.CreateText(dataFile))
+            using (JsonTextWriter writer = new JsonTextWriter(file))
+            {
+                JToken.FromObject(Data).WriteTo(writer);
+            }
+            
+        }
+
         public Bot()
         {
+            LoadData();
+
             CreateCommands();
 
             ConnectionCredentials credentials = new ConnectionCredentials("SoiBoiBot", GetAccessToken());
@@ -44,7 +79,7 @@ namespace SoiBot
             };
             WebSocketClient customClient = new WebSocketClient(clientOptions);
             client = new TwitchClient(customClient);
-            client.Initialize(credentials, "SpencasaurusRex");
+            client.Initialize(credentials, "SyndaKai");
 
             //client.OnLog += Client_OnLog;
             client.OnJoinedChannel += Client_OnJoinedChannel;
@@ -59,15 +94,15 @@ namespace SoiBot
              
             FollowerService followerService = new FollowerService(api, 10);
             followerService.OnNewFollowersDetected += FollowerService_OnNewFollowersDetected;
-            followerService.SetChannelsByName(new List<string> {"SpencasaurusRex"});
+            followerService.SetChannelsByName(new List<string> {"SyndaKai"});
             followerService.Start();
             
             client.Connect();
 
-            Timer timer = new Timer(RecurringInterval);
-            timer.AutoReset = true;
-            timer.Elapsed += SendRecurringCommand;
-            timer.Start();
+            //Timer timer = new Timer(RecurringInterval);
+            //timer.AutoReset = true;
+            //timer.Elapsed += SendRecurringCommand;
+            //timer.Start();
         }
 
         void FollowerService_OnNewFollowersDetected(Object sender, OnNewFollowersDetectedArgs args)
@@ -95,13 +130,17 @@ namespace SoiBot
                 recurringIndex = 0;
             }
 
-            recurringCommands[recurringIndex++].Execute(client, null);
+            recurringCommands[recurringIndex++].Execute(client, null, variables, file);
         }
 
         void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs args)
         {
-            string message = "Have no fear, SoiBoiBot is here :D";
+            string message = $"Have no fear, SoiBoiBot v{Data.Version}.0 is here :D";
             Console.WriteLine($"= SoiBoiBot: {message}");
+
+            Data.Version++;
+            SaveData();
+
             client.SendMessage(args.Channel, message);
         }
 
@@ -111,11 +150,11 @@ namespace SoiBot
             
             foreach (var command in commands)
             {
-                if (command.Matches(args.ChatMessage))
+                if (command.Matches(args.ChatMessage, variables))
                 {
                     try
                     {
-                        command.Execute(client, args.ChatMessage);
+                        command.Execute(client, args.ChatMessage, variables, file);
                     }
                     catch (Exception ex)
                     {
@@ -138,8 +177,12 @@ namespace SoiBot
 
         void CreateCommands()
         {
-            commands.Add(new TextCommand(new CommandTrigger("twitter"), "https://twitter.com/SpencasaurusRex"));
-            recurringCommands.Add(new TextCommand(null, "Check out my Twitter! I post there at least once a decade :) https://twitter.com/SpencasaurusRex"));
+            commands.Add(new CuilCommand());
+
+            commands.Add(new TextCommand(new CommandTrigger("jam", "ld"), "We are doing Ludum Dare 48!!!! Ludum Dare (LD for short) is a video game development competition in which teams have 72 hours (48 hours for the solo competition) to complete development of a video game. All games are based around a common theme which is determined by the community, and announced at the beginning of the jam. Kai is developing the game alongside @Anticdope in via multistream. The link can be found here: https://multistre.am/syndakai/anticdope/layout5/"));
+
+            commands.Add(new TextCommand(new CommandTrigger("twitter"), "https://twitter.com/SyndaKai"));
+            recurringCommands.Add(new TextCommand(null, "Check out my Twitter! I post there at least once a decade :) https://twitter.com/SyndaKai"));
             
             commands.Add(new TextCommand(new CommandTrigger("discord"), ""));
             recurringCommands.Add(new TextCommand(null, "Be a cutie and join our Discord! https://discord.gg/PH8JwGk"));
@@ -149,6 +192,10 @@ namespace SoiBot
 
             var soi = new TextCommand(new CommandTrigger("soi", "soiboi", "soiboibot", "soy"), ":o", ":D", "<3");
             commands.Add(soi);
+
+            commands.Add(new PonderCommand(new CommandTrigger("ponder")));
+            commands.Add(new ChemicalsCommand(new CommandTrigger("chemicals")));
+            commands.Add(new ChemicalsCommand(new FuzzyTrigger("KappaPride")));
 
             var weow = new TextCommand(new FuzzyTrigger("weow"),
                 "Meow! 😽",
@@ -181,6 +228,9 @@ namespace SoiBot
             var playKiss = new SoundCommand(null, @"C:\Stream\kiss.wav");
             commands.Add(new CompositeCommand(new PaddedTrigger(":*", "💋", "😗", "😘", "😙", "😚", "😽"), false, sayKiss, playKiss));
 
+            // var wyd = new TextCommand(new CommandTrigger("wyd"), "https://github.com/SpencasaurusRex/aoc-2015-odin/tree/master");
+            // commands.Add(wyd);
+            
             var fax = new TextCommand(new CommandTrigger("fax", "facts"), "He spittin str8 𝐅 Å 𝕏");
             commands.Add(fax);
             recurringCommands.Add(new CompositeCommand(null, true, weow, meow, sayKiss, fax, soi));
@@ -205,7 +255,7 @@ namespace SoiBot
             commands.Add(new TextCommand(new PaddedTrigger("haha"), "hehe"));
             commands.Add(new TextCommand(new PaddedTrigger("hehe"), "haha"));
             
-            commands.Add(new TextCommand(new PaddedTrigger("o/", @"\o", "HeyGuys"), "HeyGuys"));
+            // commands.Add(new TextCommand(new PaddedTrigger("o/", @"\o", "HeyGuys"), "HeyGuys"));
             
             var help = new MultiTextCommand(new CommandTrigger("help", "commands"),
                 "!soi : That's me!",
@@ -229,6 +279,11 @@ namespace SoiBot
             commands.Add(new TextCommand(new PaddedTrigger(meanWordTriggers), "😿"));
 
             commands.Add(new TextCommand(new PaddedTrigger("RIP"), "F", "𝓕", "𝑓"));
+            commands.Add(new TextCommand(new OnlyTrigger("F"), "F", "𝓕", "𝑓"));
+            
+            commands.Add(new TextCommand(new CommandTrigger("cuil")));
+            
+            // commands.Add(new HugCommand());
         }
 
         string GetAccessToken()

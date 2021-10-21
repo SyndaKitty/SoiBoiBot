@@ -4,6 +4,6 @@ namespace SoiBot
 {
     public interface ITrigger
     {
-        bool Matches(ChatMessage message);
+        bool Matches(ChatMessage message, BotVariables variables);
     }
 }
