@@ -177,9 +177,9 @@ namespace SoiBot
 
         void CreateCommands()
         {
-            commands.Add(new CuilCommand());
+            commands.Add(new CuilCommand(new CommandTrigger("cuil")));
 
-            commands.Add(new TextCommand(new CommandTrigger("jam", "ld"), "We are doing Ludum Dare 48!!!! Ludum Dare (LD for short) is a video game development competition in which teams have 72 hours (48 hours for the solo competition) to complete development of a video game. All games are based around a common theme which is determined by the community, and announced at the beginning of the jam. Kai is developing the game alongside @Anticdope in via multistream. The link can be found here: https://multistre.am/syndakai/anticdope/layout5/"));
+            //commands.Add(new TextCommand(new CommandTrigger("jam", "ld"), "We are doing Ludum Dare 48!!!! Ludum Dare (LD for short) is a video game development competition in which teams have 72 hours (48 hours for the solo competition) to complete development of a video game. All games are based around a common theme which is determined by the community, and announced at the beginning of the jam. Kai is developing the game alongside @Anticdope in via multistream. The link can be found here: https://multistre.am/syndakai/anticdope/layout5/"));
 
             commands.Add(new TextCommand(new CommandTrigger("twitter"), "https://twitter.com/SyndaKai"));
             recurringCommands.Add(new TextCommand(null, "Check out my Twitter! I post there at least once a decade :) https://twitter.com/SyndaKai"));
@@ -280,8 +280,6 @@ namespace SoiBot
 
             commands.Add(new TextCommand(new PaddedTrigger("RIP"), "F", "𝓕", "𝑓"));
             commands.Add(new TextCommand(new OnlyTrigger("F"), "F", "𝓕", "𝑓"));
-            
-            commands.Add(new TextCommand(new CommandTrigger("cuil")));
             
             // commands.Add(new HugCommand());
         }
